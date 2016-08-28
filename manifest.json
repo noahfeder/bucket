@@ -3,7 +3,7 @@
 
   "name": "Bucket runs around!",
   "description": "Bucket runs around!",
-  "version": "1.0.0",
+  "version": "1.1.0",
   "icons" :{"16":"mini.png"},
   "browser_action": {
     "default_icon": "mini.png"
