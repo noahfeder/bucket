@@ -1,0 +1,14 @@
+#sprite {
+  background-repeat: no-repeat;
+  width: 25px;
+  height: 25px;
+  transform-origin: -50% -50%;
+  -webkit-filter: drop-shadow(0px 4px 2px #666);
+  position: fixed;
+  top: 0;
+  left: 0;
+  transform: scale(2,2);
+  transition: top 1s 0.15s linear, left 1s 0.15s linear;
+  z-index: 525600;
+}
+

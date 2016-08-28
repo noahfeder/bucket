@@ -1,0 +1,19 @@
+{
+  "manifest_version": 2,
+
+  "name": "Bucket runs around!",
+  "description": "Bucket runs around!",
+  "version": "1.0.0",
+  "icons" :{"16":"mini.png"},
+  "browser_action": {
+    "default_icon": "mini.png"
+  },
+  "background": {
+    "persistent" : true,
+    "scripts" : ["background.js"]
+  },
+  "permissions": [
+    "activeTab"
+  ],
+  "web_accessible_resources" : ["bucket.png"]
+}
