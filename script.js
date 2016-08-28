@@ -1,11 +1,11 @@
 "use strict";
 
 var active = 0;
-var $sprite;
+var sprite;
 var LEN = -25;
 var facing = 'down';
 var sitting = false;
-
+var body = document.body;
 var rowMap = { //lookup the rows in the spritesheet by direction and action
   left : {
     walk : 4,
@@ -37,25 +37,25 @@ Object.prototype.setPosition = function(col,row) {
   this.style.backgroundPosition = String(LEN * col) + 'px ' + String(LEN * row) + 'px';
 }
 
-Object.prototype.move = function(dir) {
-  var top = parseInt(this.style.top);
-  var left = parseInt(this.style.left);
+function move(sprite, dir) {
+  var top = parseInt(sprite.style.top);
+  var left = parseInt(sprite.style.left);
   switch (dir) {
     case 'up':
       top = ( (top - 50) > 0) ? (top - 50) : 0;
-      this.style.top = String(top) + 'px';
+      sprite.style.top = String(top) + 'px';
       break;
     case 'down':
       top = ( (top + 50) < (window.innerHeight - 50) ) ? (top + 50) : (window.innerHeight - 50);
-      this.style.top = String(top) + 'px';
+      sprite.style.top = String(top) + 'px';
       break;
     case 'left':
       left = ( (left - 50) > 0 ) ? (left - 50) : 0;
-      this.style.left = String(left) + 'px';
+      sprite.style.left = String(left) + 'px';
       break;
     case 'right':
       left = ( (left + 50) < (window.innerWidth - 50) ) ? (left + 50) : (window.innerWidth - 50);
-      this.style.left = String(left) + 'px';
+      sprite.style.left = String(left) + 'px';
       break;
     default: break;
   }
@@ -74,7 +74,7 @@ function animate(opts) {
   var col = reverse ? COLS : 0;
   var limit = reverse ? 0 : COLS;
   active = setInterval(function() {
-      $sprite.setPosition(col,row);
+      sprite.setPosition(col,row);
       if (col === limit && loop) {
         col -= reverse ? (-1 * COLS) : COLS;
       } else if (col === limit && !loop) {
@@ -88,7 +88,7 @@ function animate(opts) {
 }
 
 function wait(frame) {
-  $sprite.setPosition(staticMap[frame],0);
+  sprite.setPosition(staticMap[frame],0);
   sitting = (frame === 'sit');
 }
 
@@ -97,16 +97,15 @@ function walk(dir) {
     animate({direction: dir, action: "sit", loop: false, reverse: true});
     setTimeout(function(){
       animate({direction: dir, action: "walk",loop:false, reverse: false});
-      $sprite.move(dir);
+      move(sprite,dir);
     }, 600);
   } else {
     animate({direction: dir,action: "walk",loop:false, reverse: false});
-    $sprite.move(dir);
+    move(sprite,dir);
   }
 }
 
-
-document.body.addEventListener('keyup',function(e) {
+function keyboard(e) {
   switch (e.keyCode) {
     case 39 : case 68 :
       walk('right');
@@ -124,17 +123,24 @@ document.body.addEventListener('keyup',function(e) {
       animate({direction: facing,action:"sit",loop:false,reverse: sitting})
     default: break;
   }
-});
+}
+
+
+
 
 function makeSprite() {
-  $sprite.remove();
-  $sprite = document.createElement('div');
-  $sprite.id = "sprite";
-  document.body.appendChild($sprite);
+  if (sprite) {
+    sprite.remove();
+  }
+  body.onkeyup = null;
+  body.onkeyup = keyboard;
+  sprite = document.createElement('div');
+  sprite.id = "sprite";
+  document.body.appendChild(sprite);
   var url = chrome.extension.getURL("bucket.png");
-  $sprite.style.backgroundImage =  'url(' + url + ')';
-  $sprite.style.top = "0px";
-  $sprite.style.left = "0px";
+  sprite.style.backgroundImage =  'url(' + url + ')';
+  sprite.style.top = "0px";
+  sprite.style.left = "0px";
 }
 
 makeSprite();
