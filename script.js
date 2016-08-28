@@ -1,29 +1,3 @@
-/*
-* ROW HEIGHT : 25px
-* COL WIDTH  : 25px
-* Static: Row 0
-*    Down: Col 0
-*    Up: Col 1
-*    Right: Col 2
-*    Left: Col 3
-*    Sit: Col 4
-* Walk Down: Row 1
-*    Cols 0..7
-* Walk Up: Row 2
-*    Cols 0..7
-* Walk Right: Row 3
-*    Cols 0..7
-* Walk Left: Row 4
-*    Cols 0..7
-* Sit Down: Row 5
-*    Cols 0..3
-* Sit Up: Row 6
-*    Cols 0..3
-* Sit Right: Row 7
-*    Cols 0..3
-* Sit Left: Row 8
-*    Cols 0..3
-*/
 "use strict";
 
 var active = 0;
@@ -32,7 +6,7 @@ var LEN = -25;
 var facing = 'down';
 var sitting = false;
 
-var rowMap = {
+var rowMap = { //lookup the rows in the spritesheet by direction and action
   left : {
     walk : 4,
     sit  : 8
@@ -51,7 +25,7 @@ var rowMap = {
   }
 };
 
-var staticMap = {
+var staticMap = { // lookup the columns in row 0
   down: 0,
   up: 1,
   right: 2,
@@ -66,7 +40,6 @@ Object.prototype.setPosition = function(col,row) {
 Object.prototype.move = function(dir) {
   var top = parseInt(this.style.top);
   var left = parseInt(this.style.left);
-  debugger;
   switch (dir) {
     case 'up':
       top = ( (top - 50) > 0) ? (top - 50) : 0;
@@ -154,6 +127,7 @@ document.body.addEventListener('keyup',function(e) {
 });
 
 function makeSprite() {
+  $sprite.remove();
   $sprite = document.createElement('div');
   $sprite.id = "sprite";
   document.body.appendChild($sprite);
