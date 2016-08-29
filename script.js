@@ -8,7 +8,8 @@ var sitting = false;// is he sitting?
 var body = document.body; // caching the body
 var imgUrl = chrome.extension.getURL("bucket.png"); //get url of image file
 
-var rowMap = { //lookup the rows in the spritesheet by direction and action
+//lookup the rows in the spritesheet by direction and action
+var rowMap = {
   left : {
     walk : 4,
     sit  : 8
