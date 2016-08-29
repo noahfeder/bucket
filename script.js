@@ -1,11 +1,13 @@
 "use strict";
 
-var active = 0;
-var sprite;
-var LEN = -25;
-var facing = 'down';
-var sitting = false;
-var body = document.body;
+var active = 0;     // global placeholder for timeouts
+var sprite;         // global storage of sprite itself
+var LEN = -25;      // length of spritesheet rows and columns
+var facing = 'down';// direction Bucket is facing
+var sitting = false;// is he sitting?
+var body = document.body; // caching the body
+var imgUrl = chrome.extension.getURL("bucket.png"); //get url of image file
+
 var rowMap = { //lookup the rows in the spritesheet by direction and action
   left : {
     walk : 4,
@@ -33,10 +35,12 @@ var staticMap = { // lookup the columns in row 0
   sit: 4
 }
 
+// adjust background position for sprite kovement
 Object.prototype.setPosition = function(col,row) {
   this.style.backgroundPosition = String(LEN * col) + 'px ' + String(LEN * row) + 'px';
 }
 
+// move the sprite div up/down/left/right by modifying the top and left properties
 function move(sprite, dir) {
   var top = parseInt(sprite.style.top);
   var left = parseInt(sprite.style.left);
@@ -61,37 +65,51 @@ function move(sprite, dir) {
   }
 }
 
+
+// animate the sprite!
 function animate(opts) {
+  // if already moving, clear Interval and reset
   clearInterval(active);
   active = 0;
+
+  // cache options into local vars
   var direction = opts.direction;
-  facing = direction;
   var action = opts.action;
   var loop = opts.loop;
   var reverse = opts.reverse;
+
+  // set global variable to new direction
+  facing = direction;
+
+  // pick the row and approprite number of columns for the animatio
   var row = rowMap[direction][action];
   var COLS = (action === 'sit') ? 3 : 7;
+  // depending on if reversed or not, set starting column and limit for clumns
   var col = reverse ? COLS : 0;
   var limit = reverse ? 0 : COLS;
+
   active = setInterval(function() {
-      sprite.setPosition(col,row);
-      if (col === limit && loop) {
-        col -= reverse ? (-1 * COLS) : COLS;
-      } else if (col === limit && !loop) {
+      sprite.setPosition(col,row); // update background position of sprite to change frame
+      if (col === limit && loop) { // restart on loop end
+        col -= reverse ? (-1 * COLS) : COLS; // reverse check
+      } else if (col === limit && !loop) { //stop animating if end of animation reached
         clearInterval(active);
         active = 0;
-        (action === "sit" && !reverse) ? wait("sit") : wait(direction);
+        (action === "sit" && !reverse) ? wait("sit") : wait(direction); // set static frame
       } else {
-        col += reverse ? -1 : 1;
+        col += reverse ? -1 : 1; // increment frame
       }
     },150);
 }
 
+// set static frame, and determine if sitting or not for global var
 function wait(frame) {
   sprite.setPosition(staticMap[frame],0);
   sitting = (frame === 'sit');
 }
 
+// take in direction and mass it to the sprite animation and DOM movement functions
+// also handle if Bucket is sitting or not
 function walk(dir) {
   if (sitting) {
     animate({direction: dir, action: "sit", loop: false, reverse: true});
@@ -104,19 +122,19 @@ function walk(dir) {
     move(sprite,dir);
   }
 }
-
+// listening for keypresses (WASD, HJKL, arrow keys)
 function keyboard(e) {
   switch (e.keyCode) {
-    case 39 : case 68 :
+    case 39 : case 68 : case 76 :
       walk('right');
       break;
-    case 37 : case 65 :
+    case 37 : case 65 : case 72 :
       walk('left');
       break;
-    case 38 : case 87 :
+    case 38 : case 87 : case 75 :
       walk('up');
       break;
-    case 40 : case 83 :
+    case 40 : case 83 : case 74 :
       walk('down');
       break;
     case 32:
@@ -127,7 +145,7 @@ function keyboard(e) {
 
 
 
-
+// initialize sprite and event listeners, removing previous sprite if already there
 function makeSprite() {
   if (sprite) {
     sprite.remove();
@@ -136,11 +154,10 @@ function makeSprite() {
   body.onkeyup = keyboard;
   sprite = document.createElement('div');
   sprite.id = "sprite";
-  document.body.appendChild(sprite);
-  var url = chrome.extension.getURL("bucket.png");
-  sprite.style.backgroundImage =  'url(' + url + ')';
+  body.appendChild(sprite);
+  sprite.style.backgroundImage =  'url(' + imgUrl + ')';
   sprite.style.top = "0px";
   sprite.style.left = "0px";
 }
 
-makeSprite();
+makeSprite(); // GET THIS PARTY STARTED
