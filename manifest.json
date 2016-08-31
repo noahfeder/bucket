@@ -3,10 +3,11 @@
 
   "name": "Bucket runs around!",
   "description": "Bucket runs around!",
-  "version": "1.1.3",
-  "icons" :{"16":"mini.png"},
+  "version": "1.3.0",
+  "icons" :{"16":"mini.png","128":"mega.png"},
   "browser_action": {
-    "default_icon": "mini.png"
+    "default_icon": "mini-off.png",
+    "default_title": "Click to make Bucket run around!"
   },
   "background": {
     "persistent" : true,

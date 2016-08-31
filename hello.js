@@ -1,12 +1,12 @@
 "use strict";
 
-var active = 0;     // global placeholder for timeouts
 var sprite;         // global storage of sprite itself
 var LEN = -25;      // length of spritesheet rows and columns
 var facing = 'down';// direction Bucket is facing
 var sitting = false;// is he sitting?
 var body = document.body; // caching the body
 var imgUrl = chrome.extension.getURL("bucket.png"); //get url of image file
+var walking = 0, active = 0; // global placeholder for timeouts
 
 //lookup the rows in the spritesheet by direction and action
 var rowMap = {
@@ -125,9 +125,14 @@ function walk(dir) {
 }
 // listening for keypresses (WASD, HJKL, arrow keys)
 function keyboard(e) {
+  if (!e.fake) {
+    clearInterval(walking);
+    walking = 0;
+    idleBucket();
+  }
   switch (e.keyCode) {
     case 39 : case 68 : case 76 :
-      walk('right');
+      walk('right')
       break;
     case 37 : case 65 : case 72 :
       walk('left');
@@ -157,8 +162,24 @@ function makeSprite() {
   sprite.id = "sprite";
   body.appendChild(sprite);
   sprite.style.backgroundImage =  'url(' + imgUrl + ')';
-  sprite.style.top = "0px";
-  sprite.style.left = "0px";
+  sprite.style.top = String(window.innerHeight / 2) + 'px';
+  sprite.style.left = String(window.innerWidth / 2) + 'px';
+  randomBucket();
+}
+
+function randomBucket() {
+  var fakeEvent = {fake:true};
+  var codes = [37,38,39,40,32];
+  active = 0;
+  walking = setInterval(function() {
+    fakeEvent.keyCode = codes[Math.floor(Math.random() * codes.length)];
+    keyboard(fakeEvent);
+  }, 2000)
+}
+
+function idleBucket() {
+  walking = setTimeout(randomBucket,5000);
 }
 
 makeSprite(); // GET THIS PARTY STARTED
+
