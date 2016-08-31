@@ -153,20 +153,26 @@ function keyboard(e) {
 
 // initialize sprite and event listeners, removing previous sprite if already there
 function makeSprite() {
-  if (sprite) {
+  if (window.bucket) { //if bucket already exists!
+    var id = window.setTimeout(function() {}, 0);
+    while (id--) {
+        window.clearTimeout(id); // clear all current animations
+    }
+    body.onkeyup = null;
     sprite.remove();
+  } else {
+    body.onkeyup = keyboard;
+    sprite = document.createElement('div');
+    sprite.id = "sprite";
+    sprite.style.backgroundImage =  'url(' + imgUrl + ')';
+    sprite.style.top = String(window.innerHeight / 2) + 'px';
+    sprite.style.left = String(window.innerWidth / 2) + 'px';
+    body.appendChild(sprite);
+    randomBucket();
   }
-  body.onkeyup = null;
-  body.onkeyup = keyboard;
-  sprite = document.createElement('div');
-  sprite.id = "sprite";
-  body.appendChild(sprite);
-  sprite.style.backgroundImage =  'url(' + imgUrl + ')';
-  sprite.style.top = String(window.innerHeight / 2) + 'px';
-  sprite.style.left = String(window.innerWidth / 2) + 'px';
-  randomBucket();
+  window.bucket = !window.bucket;
 }
-
+// random movement for bucket!
 function randomBucket() {
   var fakeEvent = {fake:true};
   var codes = [37,38,39,40,32];
@@ -176,10 +182,13 @@ function randomBucket() {
     keyboard(fakeEvent);
   }, 2000)
 }
-
+// If no input.... Bucket runs around!
 function idleBucket() {
   walking = setTimeout(randomBucket,5000);
 }
 
+if (typeof window.bucket === "undefined") {
+  window.bucket = false;
+}
 makeSprite(); // GET THIS PARTY STARTED
 
